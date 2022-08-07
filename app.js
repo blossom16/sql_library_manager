@@ -22,12 +22,16 @@ app.use('/', usersRouter);
 
 
 //Checking connection to database
-try {
-  db.sequelize.authenticate();
-  console.log("Connected to database successfully");
-} catch (error) {
-  console.error("Connected to database failed", error);
-}
+app.use('/', booksRouter);
+(async () => {
+  await sequelize.sync();
+  try {
+    await sequelize.authenticate();
+    console.log('Connection to the database successful!');
+  } catch (error) {
+    console.error('Error connecting to the database: ', error);
+  }
+})();
 
 
 //404 error handling
