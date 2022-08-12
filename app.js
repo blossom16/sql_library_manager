@@ -1,27 +1,25 @@
-var createError = require('http-errors');
 var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-const {sequelize} =require('./models')
+var path = require('path');
+var createError = require('http-errors');
+var booksRouter = require('./routes/books');
 
-var usersRouter = require('./routes/users');
+// Imports book model
+const { sequelize } = require('./models');
 
+// Instantiates server
 var app = express();
 
 
-//View engine setup
+// Configure pug
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/', usersRouter);
 
-
-//Checking connection to database
+// Checking connection to database
 app.use('/', booksRouter);
 (async () => {
   await sequelize.sync();
@@ -33,17 +31,16 @@ app.use('/', booksRouter);
   }
 })();
 
-
-//404 error handling
-app.use(( req, res, next) => {
+// 404 error handling
+app.use((req, res, next) => {
   res.status = 404;
   res.render("page-not-found");
-  });
+});
 
-//Global error handling
+// Global error handling
 app.use((err, req, res, next) => {
-    console.error(err.stack)
-    res.status(err.status || 500).send('Something broke!');
-  })
+  console.error(err.stack)
+  res.status(err.status || 500).send('Something broke!');
+});
 
 module.exports = app;
